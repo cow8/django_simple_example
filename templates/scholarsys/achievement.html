@@ -1,0 +1,120 @@
+{% extends "scholarsys/../base/base.html" %}
+{% load  staticfiles %}
+{% block content %}
+<body>
+	<div class="container">
+		<div class="main-header">
+			<div class="inner-side">
+{#            menu#}
+				<div class="header">
+					<div class="logo"><h1>Scholarship Online System</h1></div>
+                    <div class="head-top">
+						<div class="top-menu">
+						<span class="menu"></span>
+							<ul>
+								<li><a href={% url 'home' %}><span>Profile</span></a></li>
+
+                                {% if  request.user.id %}
+                                    <li class="active"><a href={% url 'achievement' %}><span>Achievement</span></a></li>
+                                    <li><a href={% url 'scholarship' %}><span>Scholarship</span></a></li>
+                                    {% if  request.user.is_staff %}
+                                        <li><a href={% url 'generate_Report' %}><span>Report</span></a></li>
+								    {%  endif %}
+                                    <li><a href={% url 'logout' %}><span>Logout</span></a></li>
+                                {% else%}
+                                    <li><a href={% url 'signup' %}><span>SignUp</span></a></li>
+                                    <li><a href={% url 'login' %}><span>Login</span></a></li>
+								{%  endif %}
+
+
+							</ul>
+
+						</div>
+							 <script>
+							 $("span.menu").click(function(){
+							 $(".top-menu ul").slideToggle("slow" , function(){
+							 });
+							 });
+							 </script>
+						<!-- //script for menu -->
+
+						<div class="clearfix"></div>
+					</div>
+
+				</div>
+
+{#content#}
+                {% if request.user.is_staff is not True %}
+
+                    <div class="interior-grids">
+                        <div class="col-md-6 interior-grid">
+                            <h3>Current Achievement</h3>
+                            <p>
+                            {% for achi in achis %}
+                                id:{{ achi.id }}
+                                Category:{{ achi.category }}
+                                Status:
+                                    {% if  achi.status  == True %}
+                                        Verified
+                                    {% else %}
+                                        Under Verifing
+                                    {% endif %}
+                                <br>
+                                {% if request.user.is_staff %}
+                                <form action="delete_achievement" method="POST">
+                                       <input type="Hidden" name="id" value={{ achi.id }}>
+                                       <input type="submit" value="Delete" >
+                                    {% csrf_token %}
+                                </form>
+                                {% endif %}
+                            {% endfor %}
+                            </p>
+                        </div>
+
+                        <div class="col-md-6 interior-grid">
+                            <h3>New Achievement</h3>
+                            <p>
+                               <form action="add_achievement" method="post">
+                                    {{ form.as_p }}
+                                    {% csrf_token %}
+                                    <p><input type="submit"></p>
+                                </form>
+                            </p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="interior-grids">
+                        <div class="col-md-6 interior-grid">
+                            <h3>Achievement Status</h3>
+                            <p>
+                               {% for achi in achis %}
+                                    Achievement id:{{ achi.id }}
+                                    Achievement Category:{{ achi.category }}
+                                    Achievement Status: {{ achi.status }}
+{#                                   delete Scholarship#}
+                                   <form action="verify_achievement" method="POST">
+                                       <input type="Hidden" name="id" value={{ achi.id }}>
+                                       <input type="submit" value="Verify">
+                                        {% csrf_token %}
+                                       <br>
+                                   </form>
+                               {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+				<!--start-footer-section-->
+				<div class="footer-section">
+					<div class="footer-top">
+						<p>zhuyinheng@gmail.com</p>
+					</div>
+				</div>
+				<!--end-footer-section-->
+
+</body>
+{% endblock %}

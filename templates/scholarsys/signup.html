@@ -1,0 +1,162 @@
+{% extends "scholarsys/../base/base.html" %}
+{% block content %}
+<body>
+	<div class="container">
+		<div class="main-header">
+			<div class="inner-side">
+                {#                menu#}
+				<div class="header">
+					<div class="logo"><h1>Scholarship Online System</h1></div>
+                    <div class="head-top">
+						<div class="top-menu">
+						<span class="menu"></span>
+							<ul>
+								<li><a href={% url 'home' %}><span>Profile</span></a></li>
+
+                                {% if  request.user.id %}
+                                    <li><a href={% url 'achievement' %}><span>Achievement</span></a></li>
+                                    <li><a href={% url 'scholarship' %}><span>Scholarship</span></a></li>
+                                    {% if  request.user.is_staff %}
+                                        <li><a href={% url 'generate_Report' %}><span>Report</span></a></li>
+								    {%  endif %}
+                                    <li><a href={% url 'logout' %}><span>Logout</span></a></li>
+                                {% else%}
+                                    <li class="active"><a href={% url 'signup' %}><span>SignUp</span></a></li>
+                                    <li><a href={% url 'login' %}><span>Login</span></a></li>
+								{%  endif %}
+
+
+							</ul>
+
+						</div>
+							 <script>
+							 $("span.menu").click(function(){
+							 $(".top-menu ul").slideToggle("slow" , function(){
+							 });
+							 });
+							 </script>
+						<!-- //script for menu -->
+
+						<div class="clearfix"></div>
+					</div>
+
+				</div>
+            </div>
+					
+            <div class="inner-side">
+                <form class="form-horizontal" id = "form" action="{% url 'signup' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group {%if form.username.errors%} has-error {%endif%}">
+                    <label for="username" class="col-sm-4 control-label">Username* :</label>
+                    <div class="col-sm-5">{{form.username}}</div>
+                    {%if form.username.errors%}
+                        <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.username.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+                    <div class="form-group {%if form.email.errors%} has-error {%endif%}">
+                  <label for="email" class="col-sm-4 control-label">Email*:</label>
+                  <div class="col-sm-5">
+                    {{form.email}}
+                  </div>
+                  {%if form.email.errors%}
+                  <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.email.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+                    <div class="form-group {%if form.user_type.errors%} has-error {%endif%}">
+                  <label for="user_type" class="col-sm-4 control-label">Are you a Teacher?*:</label>
+                  <div class="col-sm-5">
+                    {{form.user_type}}
+                  </div>
+                  {%if form.cus_id.errors%}
+                  <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.user_type.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+
+
+
+                    <div class="form-group {%if form.cus_id.errors%} has-error {%endif%}">
+                  <label for="cus_id" class="col-sm-4 control-label">Student/Teacher id*:</label>
+                  <div class="col-sm-5">
+                    {{form.cus_id}}
+                  </div>
+                  {%if form.cus_id.errors%}
+                  <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.cus_id.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+                    <div class="form-group {%if form.password.errors%} has-error {%endif%}">
+                  <label for="pssword" class="col-sm-4 control-label">password*:</label>
+                  <div class="col-sm-5">
+                    {{form.password}}
+                  </div>
+                  {%if form.password.errors%}
+                  <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.password.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+                    <div class="form-group {%if form.password2.errors%} has-error {%endif%}">
+                  <label for="pssword2" class="col-sm-4 control-label">verify your password*:</label>
+                  <div class="col-sm-5">
+                    {{form.confirm_password}}
+                  </div>
+                  {%if form.confirm_password.errors%}
+                  <div class="col-sm-5 col-sm-offset-4 margint10">
+                  <span class="color-background2 ">
+                  {% for error in form.confirm_password.errors %}
+                    {{ error|escape }}
+                  {% endfor %}
+                  </span>
+                  </div>
+                  {%endif%}
+                </div>
+
+                <div class="form-group margint30">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                  </div>
+                </div>
+
+               </form>
+            </div>
+				
+				
+					
+				<!--start-footer-section-->
+				<div class="footer-section">
+					<div class="footer-top">
+						<p>Copyright &copy; 2015.Company name All rights reserved.More Templates </p>
+					</div>
+				</div>
+	<!--end-footer-section-->
+			</div>
+		</div>
+ </body>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "scholarsys/../base/base.html" %}
+{% load  staticfiles %}
+{% block content %}
+<body>
+	<div class="container">
+		<div class="main-header">
+			<div class="inner-side">
+{#                menu#}
+				<div class="header">
+					<div class="logo"><h1>Scholarship Online System</h1></div>
+                    <div class="head-top">
+						<div class="top-menu">
+						<span class="menu"></span>
+							<ul>
+								<li><a href={% url 'home' %}><span>Profile</span></a></li>
+
+                                {% if  request.user.id %}
+                                    <li><a href={% url 'achievement' %}><span>Achievement</span></a></li>
+                                    <li><a href={% url 'scholarship' %}><span>Scholarship</span></a></li>
+                                    {% if  request.user.is_staff %}
+                                        <li class="active"><a href={% url 'generate_Report' %}><span>Report</span></a></li>
+								    {%  endif %}
+                                    <li><a href={% url 'logout' %}><span>Logout</span></a></li>
+                                {% else%}
+                                    <li><a href={% url 'signup' %}><span>SignUp</span></a></li>
+                                    <li><a href={% url 'login' %}><span>Login</span></a></li>
+								{%  endif %}
+
+
+							</ul>
+
+						</div>
+							 <script>
+							 $("span.menu").click(function(){
+							 $(".top-menu ul").slideToggle("slow" , function(){
+							 });
+							 });
+							 </script>
+						<!-- //script for menu -->
+
+						<div class="clearfix"></div>
+					</div>
+
+				</div>
+
+                <div class="interior-grids">
+					<div class="col-md-12 interior-grid">
+						<h3>Report</h3>
+						<p>
+                        {% for k,v in report.items %}
+                            Student ID:{{ k }}<br>
+                            {% for cate,score in v.items %}
+                                cate: {{ cate }} || score:{{ score }}<br>
+                            {% endfor %}
+                            ---------------------------------------<br>
+                        {% endfor %}
+                        </p>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+
+			</div>
+		</div>
+				<!--start-footer-section-->
+				<div class="footer-section">
+					<div class="footer-top">
+						<p>zhuyinheng@gmail.com</p>
+					</div>
+				</div>
+				<!--end-footer-section-->
+    </div>
+</body>
+{% endblock %}
