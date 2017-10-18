@@ -1,5 +1,4 @@
 from django.conf.urls import url
-
 from scholarsys import views
 
 urlpatterns = [
@@ -8,6 +7,7 @@ urlpatterns = [
     url(r'^login', views.login, name='login'),
     url(r'^logout', views.logout_view, name='logout'),
     url(r'^signup', views.signup, name='signup'),
+    url(r'^media',views.add_achievement,name='media'),
 
     # achievement
     url(r'^achievement/$', views.manage_achievement, name='achievement'),

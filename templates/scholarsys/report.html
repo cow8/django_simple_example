@@ -47,13 +47,16 @@
 					<div class="col-md-12 interior-grid">
 						<h3>Report</h3>
 						<p>
-                        {% for k,v in report.items %}
-                            Student ID:{{ k }}<br>
-                            {% for cate,score in v.items %}
-                                cate: {{ cate }} || score:{{ score }}<br>
+                        {% if candidate is not None %}
+                        {% for schoname,scho in candidate.items %}
+                            Scholarship Name:{{ schoname }}
+                            <br>
+                            {% for stu in scho %}
+                                Student ID:{{ stu.stu_id }}<br>
                             {% endfor %}
                             ---------------------------------------<br>
                         {% endfor %}
+                        {% endif %}
                         </p>
 					</div>
 					<div class="clearfix"></div>

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout, get_user_model
-from scholarsys.models import Student, Staff, Achievement, Material, Scholarship, all_cate
+from scholarsys.models import Student, Staff, Achievement, Material, Scholarship, achi_cate, scho_cate
 from scholarsys.forms import SignupForm, AchievementForm, ApplyScholarshipForm, AddScholarshipForm
 
 
@@ -125,7 +125,7 @@ def cancel_scholarship(request):
             stu = Student.objects.get(user_id=request.user.id)
             scho_id = Scholarship.objects.get(student=stu, id=int(request.POST['id'])).id
             stu.scholarship.remove(scho_id)
-            return redirect('manage_Scholarship')
+            return redirect('scholarship')
         else:
             return HttpResponse("Error:)")
     else:
@@ -141,7 +141,7 @@ def apply_scholarship(request):
         applied_scho_id = Scholarship.objects.get(id=int(cd["id"][0])).id
         stu.scholarship.add(applied_scho_id)
         stu.save()
-        return redirect('manage_Scholarship')
+        return redirect('scholarship')
 
 
 @staff_login_required
@@ -154,7 +154,7 @@ def add_scholarship(request):
                                               capacity=cd['capacity'], is_active=True,
                                               distributer=teacher)
         new_scho.save()
-        return redirect('/Scholarship')
+        return redirect('scholarship')
     else:
         return HttpResponse("MethodError")
 
@@ -167,7 +167,7 @@ def delete_scholarship(request):
         ds = Scholarship.objects.get(id=delete_id)
         ds.is_active = False
         ds.save()
-        return redirect('/Scholarship')
+        return redirect('scholarship')
     else:
         return HttpResponse("MethodError")
 
@@ -186,10 +186,22 @@ def manage_achievement(request):
     if request.user.is_staff is True:
         staff = Staff.objects.get(user_id=request.user.id)
         achis = Achievement.objects.all()
+        result = {}
+        for achi in achis:
+            result[achi] = []
+            imgs = Material.objects.filter(achievement=achi)
+            for img in imgs:
+                result[achi].append(img)
         return render(request, 'scholarsys/achievement.html', locals())
     else:
         stu = Student.objects.filter(user_id=request.user.id)
         achis = Achievement.objects.filter(student=stu)
+        result={}
+        for achi in achis:
+            result[achi]=[]
+            imgs=Material.objects.filter(achievement=achi)
+            for img in imgs:
+                result[achi].append(img)
         form = AchievementForm()
         return render(request, 'scholarsys/achievement.html', locals())
 
@@ -203,7 +215,7 @@ def verify_achievement(request):
     ds = Achievement.objects.get(id=verified_id)
     ds.status = not ds.status
     ds.save()
-    return redirect('/Achievement')
+    return redirect('achievement')
 
 
 @staff_login_required
@@ -214,7 +226,7 @@ def delete_achievement(request):
     delete_id = request.POST["id"]
     ds = Achievement.objects.get(id=delete_id)
     Achievement.delete(ds)
-    return redirect('index')
+    return redirect('achievement')
 
 
 @login_required
@@ -228,22 +240,53 @@ def add_achievement(request):
         achi = Achievement.objects.create(name=cd['name'], category=cd['category'], 
                                           score=cd['score'], student=stu)
         achi.save()
-        material = Material.objects.create(evidence=cd['evidence'], achievement=achi)
+        img=request.FILES.get('evidence')
+        material = Material.objects.create(evidence=img, achievement=achi)
         material.save()
-        return redirect('/index')
+        return redirect('home')
+
+
+def distri_scholarship(stus):
+    temp=[]
+    # for each student calculate the schoalr score for each scholar
+    for stu in stus:
+        achi=stus[stu]
+        schot={}
+        schot[0] = 10 * achi[0] + achi[1] + achi[2] + achi[3] + achi[4]
+        schot[1] = achi[0]
+        schot[2] = achi[0] + achi[1]
+        schot[3] = achi[0] + achi[2]
+        schot[4] = achi[0] + achi[3]
+        schot[5] = achi[0] + achi[4]
+        temp.append((schot[0],schot[1],schot[2],schot[3],schot[4],schot[5],stu))
+
+    scho_candidate={}
+    all_scho=Scholarship.objects.filter(is_active=True)
+    for scho in all_scho:
+        scho_name=scho_cate[int(scho.category)][1]
+        scho_candidate[scho_name]=[]
+        cap=scho.capacity
+        t = sorted(temp, key=lambda student: student[int(scho.category)])
+        for i in range(cap):
+            if i>=len(t):
+                break
+            scho_candidate[scho_name].append(t[i][6])
+    return scho_candidate
 
 
 @staff_login_required
 def generate_report(request):
-    stus = Student.objects.all()
-    report = {}
+    stus = Student.objects.filter(user__is_active=True)
+    stu_info = {}
     for stu in stus:
-        report[stu.user.id] = {}
-        for cate in all_cate:
+        stu_info[stu] = {}
+        for cate in achi_cate:
             cate = cate[0]
             achis = stu.achievement_set.filter(category=cate)
             score_sum = 0
             for achi in achis:
                 score_sum += achi.score
-            report[stu.user.id][cate] = score_sum
-    return render(request, 'scholarsys/report.html', locals())
+            stu_info[stu][cate] = score_sum
+
+    candidate=distri_scholarship(stu_info)
+    return render(request, 'scholarsys/report.html', {'candidate':candidate, 'scho_cate':scho_cate})

@@ -1,12 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-all_cate = ((0, 'National Scholarship'), (1, 'University Scholarship'), (2, 'School Scholarship'))
-
+scho_cate = ((0, 'National Scholarship'),
+             (1, 'University Scholarship'),
+             (2, 'School Academic Scholarship'),
+             (3, 'School Athletic Scholarship'),
+             (4, 'School Student Affair Scholarship'),
+             (5, 'School Research Scholarship'),
+             )
+achi_cate=((0,'Basic Score'),
+           (1,'Academic Score'),
+           (2,'Athletic Score'),
+           (3,'Student Affair Score'),
+           (4,'Research Score')
+           )
 
 class Material(models.Model):
     description = models.TextField(null=True)
-    evidence = models.ImageField(null=True)
+    evidence = models.ImageField(upload_to='media')
     achievement = models.ForeignKey('Achievement')
 
     def __str__(self):
@@ -15,7 +26,7 @@ class Material(models.Model):
 
 class Achievement(models.Model):
     name = models.CharField(max_length=120)
-    category = models.CharField(choices=all_cate, max_length=30)
+    category = models.CharField(choices=achi_cate, max_length=30)
     score = models.IntegerField()
     student = models.ForeignKey('Student')
     status = models.BooleanField(choices=((0, '未通过'), (1, '通过')), default=0)
@@ -42,7 +53,7 @@ class Staff(models.Model):
 
 
 class Scholarship(models.Model):
-    category = models.CharField(choices=all_cate, max_length=30)
+    category = models.CharField(choices=scho_cate, max_length=30)
     bonus = models.IntegerField()
     capacity = models.IntegerField()
     distributer = models.ForeignKey(Staff)

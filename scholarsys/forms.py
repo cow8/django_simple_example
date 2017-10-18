@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from scholarsys.models import all_cate
+from scholarsys.models import scho_cate
 import scholarsys.models as models
 import re
 
@@ -88,7 +88,7 @@ class LoginForm(forms.Form):
 
 class AchievementForm(forms.Form):
     name = forms.CharField(max_length=120)
-    category = forms.ChoiceField(choices=(all_cate))
+    category = forms.ChoiceField(choices=(scho_cate))
     score = forms.IntegerField()
     # description = forms.TextInput()
     evidence = forms.ImageField()
@@ -99,6 +99,6 @@ class ApplyScholarshipForm(forms.Form):
 
 
 class AddScholarshipForm(forms.Form):
-    category = forms.ChoiceField(choices=all_cate)
+    category = forms.ChoiceField(choices=scho_cate)
     bonus = forms.IntegerField()
     capacity = forms.IntegerField()

@@ -16,9 +16,12 @@ Including another URLconf
 from django.conf.urls import url
 from django.conf.urls import include
 from django.contrib import admin
-from scholarsys import views
+from django.conf.urls.static import static
+from DataMiningLab2 import settings
 urlpatterns = [
     # main page
     url(r'^admin/', admin.site.urls, name="admin"),
     url(r'^', include('scholarsys.urls') , name="scholarsys_redirect"),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
